@@ -15,6 +15,7 @@ import com.nandi.mytime.service.MyTimeSpiceService;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bindViews();
-        fetchData();
+        bindViews(); // initialize the views
+        fetchData(); // create api request
     }
 
     private void bindViews() {
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         // create an api request
         request = new MyTimeApiRequest(queryParams);
+        // display loading bar when fetching the data
         showProgressDialog();
         // make the api call
         spiceManager.execute(request, "Companies List", DurationInMillis.ONE_MINUTE,
@@ -78,30 +80,39 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    private class MyTimeApiRequestListener implements com.octo.android.robospice.request.listener.RequestListener<com.nandi.mytime.model.CompaniesList> {
+    /**
+     * Listener to the api call
+     */
+    private class MyTimeApiRequestListener implements RequestListener<CompaniesList> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            closeProgressDialog();
+            closeProgressDialog(); // close the loading bar upon finishing the api call
             Toast.makeText(MainActivity.this, "Please check your data connection!", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onRequestSuccess(CompaniesList companyOverviews) {
-            closeProgressDialog();
+            closeProgressDialog(); // close the loading bar upon finishing the api call
             if(companyOverviews != null && companyOverviews.size()!= 0) {
                 companyOverviewList.clear();
-                companyOverviewList.addAll(companyOverviews);
-                mAdapter.notifyDataSetChanged();
+                companyOverviewList.addAll(companyOverviews); // add the response to the list
+                mAdapter.notifyDataSetChanged(); // notify adapter about data change
             }
         }
     }
 
+    /**
+     * show the loading bar
+     */
     private void showProgressDialog() {
         if(!progressDialog.isShowing()) {
             progressDialog.show();
         }
     }
 
+    /**
+     * close the loading bar
+     */
     private void closeProgressDialog() {
         if(progressDialog.isShowing()) {
             progressDialog.dismiss();

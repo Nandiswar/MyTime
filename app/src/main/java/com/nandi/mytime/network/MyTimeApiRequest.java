@@ -6,6 +6,7 @@ import com.octo.android.robospice.request.retrofit.RetrofitSpiceRequest;
 import java.util.Map;
 
 /**
+ * API request which fetches the list of companies
  * Created by nandi_000 on 11-11-2015.
  */
 public class MyTimeApiRequest extends RetrofitSpiceRequest<CompaniesList,MyTimeApi> {
